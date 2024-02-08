@@ -27,8 +27,9 @@ from sklearn.neural_network import MLPRegressor
 from sklearn.model_selection import train_test_split
 #split data randomly so 60% is training and 40% is testing
 target = data['Annual_Premium']
+data = data.drop('Annual_Premium', axis=1)
 X_train, X_test, Y_train, Y_test = train_test_split(data, target, test_size=.3, random_state=42)
-mlp = MLPRegressor(activation = 'relu', hidden_layer_sizes=(50, 50), alpha= .001, random_state=20)
+mlp = MLPRegressor(activation = 'relu', hidden_layer_sizes=(30, 40, 40), alpha= .001, random_state=20)
 mlp.fit(X_train, Y_train)
 from sklearn.metrics import mean_squared_error
 #Make Prediction on x test values
