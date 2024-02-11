@@ -25,7 +25,7 @@ data['Annual_Premium'] = data['Annual_Premium']/47204.2
 #CREATE NEURAL NETWORK
 from sklearn.neural_network import MLPRegressor
 from sklearn.model_selection import train_test_split
-#split data randomly so 60% is training and 40% is testing
+#split data randomly so 70% is training and 30% is testing
 target = data['Annual_Premium']
 data = data.drop('Annual_Premium', axis=1)
 X_train, X_test, Y_train, Y_test = train_test_split(data, target, test_size=.3, random_state=42)
