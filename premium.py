@@ -2,7 +2,6 @@ import tensorflow as tf
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
-from sklearn.neural_network import MLPRegressor
 import pandas as pd
 from sklearn import preprocessing
 import numpy as np
@@ -31,7 +30,7 @@ data = data.drop('OBJECT_ID', axis=1)
 data = data.drop('CARRYING_CAPACITY', axis=1)
 data = data.drop('CLAIM_PAID', axis=1)
 df = pd.DataFrame(data)
-display(df)
+#display(df)
 
 
 def filter(premium):
@@ -61,7 +60,7 @@ df = df.dropna(axis=0, subset=None, inplace=False, ignore_index=False)
 df['CATEGORY'] = (df['PREMIUM'].apply(filter))
 target = (df['CATEGORY'])
 norm_target = target/9
-display(df)
+#display(df)
 
 # Normalize the data (all columns to be in range 0-1)
 normalized_df = df.copy()
@@ -74,23 +73,9 @@ X_train, X_test, Y_train, Y_test = train_test_split(
     normalized_df, target, test_size=.3, random_state=42)
 X_train2, X_test2, Y_train2, Y_test2 = train_test_split(
     normalized_df, norm_target, test_size=.3, random_state=42)
-display(normalized_df)
+#display(normalized_df)
 
-# CREATE NEURAL NETWORK
-
-mlp = MLPRegressor(activation='relu', hidden_layer_sizes=(
-    30, 40, 40), alpha=.001, random_state=20)
-mlp.fit(X_train2, Y_train2/10)
-# Make Prediction on x test values
-pred = mlp.predict(X_test2)
-# Calculate accuracy and error metrics
-test_set_rsquared = mlp.score(X_test2, Y_test2/9)
-test_set_rmse = np.sqrt(mean_squared_error(Y_test2, pred))
-# Print R_squared and RMSE value
-print('R_squared value: ', test_set_rsquared)
-print('RMSE: ', test_set_rmse)
-
-# CREATE NEURAL NETWORK
+# CREATE MLP NEURAL NETWORK
 
 mlp = MLPClassifier(activation='relu', hidden_layer_sizes=(
     30, 40, 40), alpha=.001, random_state=20)
@@ -103,6 +88,11 @@ test_set_rmse = np.sqrt(mean_squared_error(Y_test, pred))
 # Print R_squared and RMSE value
 print('R_squared value: ', test_set_rsquared)
 print('RMSE: ', test_set_rmse)
+
+from joblib import dump
+dump(mlp, 'saved_models/mlp.joblib')
+
+#CREATE SEQUENTIAL NEURAL NETWORK
 
 model = tf.keras.models.Sequential()
 model.add(tf.keras.layers.Dense(units=32, activation='relu'))
@@ -122,3 +112,5 @@ history = model.fit(x=X_train, y=Y_train, batch_size=32,
                     epochs=10, shuffle=True,
                     validation_split=0.1)
 model.evaluate(x=X_test, y=Y_test, batch_size=32)
+
+model.save('saved_models/seq1.keras')
