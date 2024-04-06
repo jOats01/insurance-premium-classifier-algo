@@ -8,11 +8,18 @@ import numpy as np
 
 # read in data
 data = pd.read_csv('motor_data.csv')
-# START OF PREPROCESS DATA, Neural Networks perform better with numbers
-# preprocess gender so it is 0 for female and 1 for male
+# START OF PREPROCESS DATA
 label = preprocessing.LabelEncoder()
 gender = label.fit_transform(data['SEX'])
 data['SEX'] = gender
+data['INSR_BEGIN'] = pd.to_datetime(data['INSR_BEGIN'], format='%d-%b-%y')
+begn = label.fit_transform(data['INSR_BEGIN'])
+data['INSR_BEGIN'] = begn
+data['INSR_END'] = pd.to_datetime(data['INSR_END'], format='%d-%b-%y')
+term = label.fit_transform(data['INSR_END'])
+data['INSR_END'] = term
+carr = label.fit_transform(data['CARRYING_CAPACITY'])
+data['CARRYING_CAPACITY'] = carr
 vtype = label.fit_transform(data['TYPE_VEHICLE'])
 data['TYPE_VEHICLE'] = vtype
 vMake = label.fit_transform(data['MAKE'])
@@ -24,13 +31,13 @@ data['EFFECTIVE_YR'] = vEffectiveYr
 # END OF PREPROCESS DATA
 
 # Remove unnecessary columns from data
-data = data.drop('INSR_BEGIN', axis=1)
-data = data.drop('INSR_END', axis=1)
 data = data.drop('OBJECT_ID', axis=1)
 data = data.drop('CARRYING_CAPACITY', axis=1)
 data = data.drop('CLAIM_PAID', axis=1)
+data = data.drop('CCM_TON', axis=1)
+data = data.drop('EFFECTIVE_YR', axis=1)
+data = data.drop('INSR_TYPE', axis=1)
 df = pd.DataFrame(data)
-#display(df)
 
 
 def filter(premium):
@@ -59,10 +66,8 @@ def filter(premium):
 df = df.dropna(axis=0, subset=None, inplace=False, ignore_index=False)
 df['CATEGORY'] = (df['PREMIUM'].apply(filter))
 target = (df['CATEGORY'])
-norm_target = target/9
-#display(df)
 
-# Normalize the data (all columns to be in range 0-1)
+# Normalize the data
 normalized_df = df.copy()
 normalized_df = (df-df.min())/(df.max()-df.min())
 
@@ -71,34 +76,12 @@ normalized_df = normalized_df.drop('PREMIUM', axis=1)
 normalized_df = normalized_df.drop('CATEGORY', axis=1)
 X_train, X_test, Y_train, Y_test = train_test_split(
     normalized_df, target, test_size=.3, random_state=42)
-X_train2, X_test2, Y_train2, Y_test2 = train_test_split(
-    normalized_df, norm_target, test_size=.3, random_state=42)
-#display(normalized_df)
-
-# CREATE MLP NEURAL NETWORK
-
-mlp = MLPClassifier(activation='relu', hidden_layer_sizes=(
-    30, 40, 40), alpha=.001, random_state=20)
-mlp.fit(X_train, Y_train)
-# Make Prediction on x test values
-pred = mlp.predict(X_test)
-# Calculate accuracy and error metrics
-test_set_rsquared = mlp.score(X_test, Y_test)
-test_set_rmse = np.sqrt(mean_squared_error(Y_test, pred))
-# Print R_squared and RMSE value
-print('R_squared value: ', test_set_rsquared)
-print('RMSE: ', test_set_rmse)
-
-from joblib import dump
-dump(mlp, 'saved_models/mlp.joblib')
 
 #CREATE SEQUENTIAL NEURAL NETWORK
-
 model = tf.keras.models.Sequential()
-model.add(tf.keras.layers.Dense(units=32, activation='relu'))
-# model.add(tf.keras.layers.Dropout(rate=0.2))
-model.add(tf.keras.layers.Dense(units=64, activation='relu'))
-model.add(tf.keras.layers.Dense(units=64, activation='relu'))
+model.add(tf.keras.layers.Dense(units=512, activation='relu'))
+model.add(tf.keras.layers.Dense(units=256, activation='relu'))
+model.add(tf.keras.layers.Dense(units=256, activation='relu'))
 model.add(tf.keras.layers.Dense(units=10, activation='softmax'))
 model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
               loss="sparse_categorical_crossentropy",
@@ -109,7 +92,7 @@ Y_train = tf.constant((Y_train))
 X_test = tf.constant((X_test))
 Y_test = tf.constant((Y_test))
 history = model.fit(x=X_train, y=Y_train, batch_size=32,
-                    epochs=10, shuffle=True,
+                    epochs=13, shuffle=True,
                     validation_split=0.1)
 model.evaluate(x=X_test, y=Y_test, batch_size=32)
 
