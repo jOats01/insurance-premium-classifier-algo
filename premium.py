@@ -5,6 +5,7 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 from sklearn import preprocessing
 import numpy as np
+import datetime as dt
 
 # read in data
 data = pd.read_csv('motor_data.csv')
@@ -13,11 +14,9 @@ label = preprocessing.LabelEncoder()
 gender = label.fit_transform(data['SEX'])
 data['SEX'] = gender
 data['INSR_BEGIN'] = pd.to_datetime(data['INSR_BEGIN'], format='%d-%b-%y')
-begn = label.fit_transform(data['INSR_BEGIN'])
-data['INSR_BEGIN'] = begn
+data['INSR_BEGIN'] = data['INSR_BEGIN'].map(dt.datetime.toordinal)
 data['INSR_END'] = pd.to_datetime(data['INSR_END'], format='%d-%b-%y')
-term = label.fit_transform(data['INSR_END'])
-data['INSR_END'] = term
+data['INSR_END'] = data['INSR_END'].map(dt.datetime.toordinal)
 carr = label.fit_transform(data['CARRYING_CAPACITY'])
 data['CARRYING_CAPACITY'] = carr
 vtype = label.fit_transform(data['TYPE_VEHICLE'])
