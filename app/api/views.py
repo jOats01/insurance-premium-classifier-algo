@@ -22,7 +22,7 @@ def getData(request):
         x = json.loads(request.body)
 
         print('Data received...')
-        x[3] = x[3]*57
+        x['insuredValue'] = x['insuredValue']*57
         df = pandas.DataFrame([x])
         df.columns = ['SEX', 'INSR_BEGIN', 'INSR_END', 'INSURED_VALUE', 'PROD_YEAR','SEATS_NUM', 'TYPE_VEHICLE', 'MAKE', 'USAGE']
 
