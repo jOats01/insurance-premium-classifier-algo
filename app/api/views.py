@@ -21,6 +21,7 @@ def getData(request):
     if request.method == 'POST':
         x = json.loads(request.body)
         print('Data received...')
+        x[3] = x[3]*57
         df = pandas.DataFrame([x])
         df.columns = ['SEX', 'INSR_BEGIN', 'INSR_END', 'INSURED_VALUE', 'PROD_YEAR','SEATS_NUM', 'TYPE_VEHICLE', 'MAKE', 'USAGE']
 
@@ -43,8 +44,9 @@ def getData(request):
         df = tf.convert_to_tensor(df, dtype=tf.float32)
         y = model.predict(df)
 
-        prem = random.randint(.5*premiums[np.argmax(y)], premiums[np.argmax(y)])
+        prem = random.randint(.75*premiums[np.argmax(y)], premiums[np.argmax(y)])
+        prem = prem/57
         insr_premium = {'premium': prem}
         return Response(insr_premium)
     else:
-        return Response('Waiting...')
+        return Response('Waiting..')
