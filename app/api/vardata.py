@@ -168,6 +168,7 @@ usageIndex = [0.69230769, 0.84615385, 0.46153846, 0.30769231, 1.        ,
 premiums = [500, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000]
 
 def find_index(my_list, target_value):
+    my_list = [item.strip() for item in my_list]
     try:
         index = my_list.index(target_value)
         return index

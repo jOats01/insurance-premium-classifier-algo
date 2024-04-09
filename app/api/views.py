@@ -20,6 +20,7 @@ def getData(request):
     
     if request.method == 'POST':
         x = json.loads(request.body)
+
         print('Data received...')
         df = pandas.DataFrame([x])
         df.columns = ['SEX', 'INSR_BEGIN', 'INSR_END', 'INSURED_VALUE', 'PROD_YEAR','SEATS_NUM', 'TYPE_VEHICLE', 'MAKE', 'USAGE']
