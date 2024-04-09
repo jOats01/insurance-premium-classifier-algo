@@ -20,6 +20,7 @@ def getData(request):
     
     if request.method == 'POST':
         x = json.loads(request.body)
+
         print('Data received...')
         x[3] = x[3]*57
         df = pandas.DataFrame([x])
@@ -49,4 +50,16 @@ def getData(request):
         insr_premium = {'premium': prem}
         return Response(insr_premium)
     else:
-        return Response('Waiting..')
+        return Response('Waiting...')
+
+@api_view(['GET'])
+def getVType(request):
+    return Response(vardata.vType)
+
+@api_view(['GET'])
+def getVMake(request):
+    return Response(vardata.vMake)
+
+@api_view(['GET'])
+def getVUsage(request):
+    return Response(vardata.vUsage) 
