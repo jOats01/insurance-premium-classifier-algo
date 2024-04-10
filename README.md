@@ -12,6 +12,6 @@ Install Django rest framework, using command: pip install djangorestframework
 
 RUNNING PROGRAMS
 Run Separate Neural Network Program: python premium.py
+IMPORTANT: Run premium.py at least once before running the Django server
 Run Django Server: CD into insurance-premium-classifier-algo/app, then run command: python manage.py runserver
 
-NB: Run premium.py at least once before running the Django server
